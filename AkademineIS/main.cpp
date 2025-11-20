@@ -255,6 +255,25 @@ public:
         }
         return true;
     }
+    bool validateDate(const std::string& data) {
+        if (data.length() != 10) return false;
+        if (data[2] != '-' || data[5] != '-') return false;
+
+        for (int i = 0; i < 10; i++) {
+            if (i == 2 || i == 5) continue;
+            if (!isdigit(data[i])) return false;
+        }
+
+        int month = stoi(data.substr(0, 2));
+        int day = stoi(data.substr(3, 2));
+        int year = stoi(data.substr(6, 4));
+
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+        if (year < 1900 || year > 2100) return false;
+
+        return true;
+    }
 };
 
 
@@ -639,7 +658,7 @@ public:
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
             sqlite3_finalize(stmt);
-            throw TechnineKlaida("Nepavyko issaugoti pažymį");
+            throw TechnineKlaida("Nepavyko issaugoti pazymi");
         }
 
         int newId = sqlite3_last_insert_rowid(db->getDb());
@@ -809,6 +828,33 @@ public:
     }
 };
 
+class StudentasRepository {
+private:
+    DatabaseManager* db;
+
+public:
+    StudentasRepository(DatabaseManager* database) : db(database) {}
+
+    string getStudentoVardasPavarde(int studento_id) {
+        string sql = "SELECT n.vardas, n.pavarde FROM naudotojas n "
+                     "JOIN studentas s ON n.id = s.naudotojo_id "
+                     "WHERE s.id = ?;";
+        sqlite3_stmt* stmt;
+        string result = "";
+
+        if (sqlite3_prepare_v2(db->getDb(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+            sqlite3_bind_int(stmt, 1, studento_id);
+            if (sqlite3_step(stmt) == SQLITE_ROW) {
+                string vardas = (const char*)sqlite3_column_text(stmt, 0);
+                string pavarde = (const char*)sqlite3_column_text(stmt, 1);
+                result = vardas + " " + pavarde;
+            }
+            sqlite3_finalize(stmt);
+        }
+        return result;
+    }
+};
+
 void administratoriausMeniu(Admin& admin, DatabaseManager& db);
 void destytojoMeniu(Destytojas& destytojas, DatabaseManager& db);
 void studentoMeniu(Studentas& studentas, DatabaseManager& db);
@@ -908,6 +954,17 @@ void administratoriausMeniu(Admin& admin, DatabaseManager& db) {
                 if (!inputSuCancel("Iveskite pavarde", pavarde)) continue;
                 if (!inputSuCancel("Role (admin/destytojas/studentas)", role)) continue;
 
+                int grupes_id = 0;
+                if (role == "studentas") {
+                    auto grupes = grupeRepo.findAll();
+                    cout << "\n--- VISOS GRUPES ---" << endl;
+                    for (const auto& g : grupes) {
+                        cout << "ID: " << g.getId() << " | " << g.getPavadinimas() << endl;
+                    }
+
+                    if (!inputSuCancel("\nIveskite grupes ID", grupes_id)) continue;
+                }
+
                 Naudotojas naujas;
                 naujas.setVardas(vardas);
                 naujas.setPavarde(pavarde);
@@ -917,10 +974,11 @@ void administratoriausMeniu(Admin& admin, DatabaseManager& db) {
                 cout << "Naudotojas sukurtas sekmingai! ID: " << newId << endl;
 
                 if (role == "studentas") {
-                    string sql = "INSERT INTO studentas (naudotojo_id, grupes_id) VALUES (?, 1);";
+                    string sql = "INSERT INTO studentas (naudotojo_id, grupes_id) VALUES (?, ?);";
                     sqlite3_stmt* stmt;
                     if (sqlite3_prepare_v2(db.getDb(), sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
                         sqlite3_bind_int(stmt, 1, newId);
+                        sqlite3_bind_int(stmt, 2, grupes_id);
                         sqlite3_step(stmt);
                         sqlite3_finalize(stmt);
                     }
@@ -1149,7 +1207,7 @@ void administratoriausMeniu(Admin& admin, DatabaseManager& db) {
                 cout << "Iveskite nauja data (YYYY-MM-DD) (arba '0' - atgal): ";
                 cin >> nauja_data;
                 if (nauja_data == "0") {
-                    cout << "Grįžtama į meniu..." << endl;
+                    cout << "Griztama i meniu..." << endl;
                     continue;
                 }
 
@@ -1178,6 +1236,7 @@ void destytojoMeniu(Destytojas& destytojas, DatabaseManager& db) {
     GrupeRepository grupeRepo(&db);
     DalykasRepository dalykasRepo(&db);
     PazymysRepository pazymysRepo(&db);
+    StudentasRepository studentasRepo(&db);
 
     int pasirinkimas;
     do {
@@ -1208,7 +1267,8 @@ void destytojoMeniu(Destytojas& destytojas, DatabaseManager& db) {
 
                 cout << "\n--- Grupes studentai ---" << endl;
                 for (int stud_id : studentai_ids) {
-                    cout << "Studento ID: " << stud_id << endl;
+                    string vardas_pavarde = studentasRepo.getStudentoVardasPavarde(stud_id);
+                    cout << "Studento ID: " << stud_id << " | " << vardas_pavarde << endl;
                 }
 
                 int studento_id, dalyko_id, reiksme;
@@ -1217,14 +1277,14 @@ void destytojoMeniu(Destytojas& destytojas, DatabaseManager& db) {
                 if (!inputSuCancel("\nIveskite studento ID", studento_id)) continue;
 
                 auto dalykai = dalykasRepo.findByDestytojas(destytojas.getDestytojoId());
-                cout << "\n--- Jusu dalykai ---" << endl;
+                cout << "\n--- Paziurekite reikiamo dalyko id ---" << endl;
                 for (const auto& d : dalykai) {
                     cout << "ID: " << d.getId() << " | " << d.getPavadinimas() << endl;
                 }
 
                 if (!inputSuCancel("Iveskite dalyko ID", dalyko_id)) continue;
                 if (!inputSuCancel("Pazymio reiksme (1-10)", reiksme)) continue;
-                cout << "Data (YYYY-MM-DD) (arba '0' - atgal): ";
+                cout << "Data (MM-DD-YYYY) (arba '0' - atgal): ";
                 cin >> data;
                 if (data == "0") {
                     cout << "Griztama i meniu..." << endl;
@@ -1237,6 +1297,11 @@ void destytojoMeniu(Destytojas& destytojas, DatabaseManager& db) {
                 naujas.setDestytojoId(destytojas.getDestytojoId());
                 naujas.setReiksme(reiksme);
                 naujas.setData(data);
+
+                if (!naujas.validateDate(data)) {
+                    cout << "Netinkama data! Naudokite formata MM-DD-YYYY." << endl;
+                    continue;
+                }
 
                 pazymysRepo.save(naujas);
                 cout << "Pazymys ivestas sekmingai!" << endl;
