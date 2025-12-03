@@ -1,4 +1,0 @@
-C:/Users/Linas/CLionProjects/AkademineIS/cmake-build-debug/CMakeFiles/sqlite3.dir
-C:/Users/Linas/CLionProjects/AkademineIS/cmake-build-debug/CMakeFiles/AkademineIS.dir
-C:/Users/Linas/CLionProjects/AkademineIS/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Linas/CLionProjects/AkademineIS/cmake-build-debug/CMakeFiles/rebuild_cache.dir
