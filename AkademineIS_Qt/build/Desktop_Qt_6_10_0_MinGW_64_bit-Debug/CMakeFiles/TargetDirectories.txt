@@ -1,0 +1,8 @@
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/sqlite3.dir
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/AkademineIS.dir
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/sqlite3_autogen_timestamp_deps.dir
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/sqlite3_autogen.dir
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/AkademineIS_autogen_timestamp_deps.dir
+C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/CMakeFiles/AkademineIS_autogen.dir

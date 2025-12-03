@@ -1,0 +1,5 @@
+set(__QT_DEPLOY_TARGET_sqlite3_FILE C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/libsqlite3.a)
+set(__QT_DEPLOY_TARGET_sqlite3_TYPE STATIC_LIBRARY)
+set(__QT_DEPLOY_TARGET_AkademineIS_FILE C:/Users/Linas/Desktop/AkademineIS_Qt/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/AkademineIS.exe)
+set(__QT_DEPLOY_TARGET_AkademineIS_TYPE EXECUTABLE)
+set(__QT_DEPLOY_TARGET_AkademineIS_RUNTIME_DLLS C:/Qt/6.10.0/mingw_64/bin/Qt6Widgets.dll;C:/Qt/6.10.0/mingw_64/bin/Qt6Gui.dll;C:/Qt/6.10.0/mingw_64/bin/Qt6Core.dll)
